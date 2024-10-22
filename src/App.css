@@ -6,3 +6,13 @@ body {
     margin: 0;
     padding: 0;
   }
+
+  .blurred {
+    filter: blur(5px); /* Adjust the blur intensity */
+  }
+
+  /* Content of your page */
+  #content {
+    padding: 20px;
+    text-align: center;
+  }

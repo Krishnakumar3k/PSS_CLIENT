@@ -1,27 +1,32 @@
 import React, { useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import Swal from 'sweetalert2';
+// import '../../App.css'; 
+
 import { format } from "date-fns";
 
-const OfferForm = ({ onSubmit, onClose }) => {
+const TrainingForm = ({ onSubmit, onClose }) => {
   const [formData, setFormData] = useState({
     name: "",
     designation: "",
-    joiningDate: "",
-    letterDate: "",
-    probationPeriod: 6,
-    bondPeriod: 2,
+    date: "",
+    enddate: "",
+    gender: "",
   });
 
   const [showPreview, setShowPreview] = useState(false);
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleDateChange = (date, field) => {
-    setFormData({ ...formData, [field]: date });
+  const handleDateChange = (date) => {
+    setFormData({ ...formData, date: date });
+  };
+
+  const handleEndDateChange = (date) => {
+    setFormData({ ...formData, enddate: date });
   };
 
   const handlePreview = (e) => {
@@ -33,39 +38,42 @@ const OfferForm = ({ onSubmit, onClose }) => {
     e.preventDefault();
     const formattedData = {
       ...formData,
-      joiningDate: formatDate(formData.joiningDate),
-      letterDate: formatDate(formData.letterDate),
+      date: formatDate(formData.date),
+      enddate: formatDate(formData.enddate),
     };
     onSubmit(formattedData);
+    Swal.fire({
+      icon: "success",
+      title: "Training Letter Generated!",
+      showConfirmButton: false,
+      timer: 2000,
+      backdrop: `
+        rgba(0, 0, 0, 0.4)  /* Semi-transparent dark backdrop */
+      `,
+      customClass: {
+        popup: 'swal2-no-blur',
+      }
+    });
   };
 
   const formatDate = (date) => {
     if (!date) return "";
-    return format(date, "do MMMM yyyy");
+    return new Date(date).toLocaleDateString("en-IN", {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+    });
   };
 
   const renderPreview = () => (
     <div className="space-y-6">
       <h3 className="text-lg text-center font-medium text-gray-900">Preview</h3>
       <div className="grid grid-cols-2 gap-4">
-        <p>
-          <strong>Name:</strong> {formData.name}
-        </p>
-        <p>
-          <strong>Designation:</strong> {formData.designation}
-        </p>
-        <p>
-          <strong>Joining Date:</strong> {formatDate(formData.joiningDate)}
-        </p>
-        <p>
-          <strong>Letter Date:</strong> {formatDate(formData.letterDate)}
-        </p>
-        <p>
-          <strong>Probation Period:</strong> {formData.probationPeriod} months
-        </p>
-        <p>
-          <strong>Bond Period:</strong> {formData.bondPeriod} years
-        </p>
+        <p><strong>Name:</strong> {formData.name}</p>
+        <p><strong>Designation:</strong> {formData.designation}</p>
+        <p><strong>Start Date:</strong> {formatDate(formData.date)}</p>
+        <p><strong>End Date:</strong> {formatDate(formData.enddate)}</p>
+        <p><strong>Gender:</strong> {formData.gender}</p>
       </div>
       <div className="flex justify-end space-x-4 mt-8">
         <button
@@ -80,20 +88,17 @@ const OfferForm = ({ onSubmit, onClose }) => {
           onClick={handleSubmit}
           className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-pano-blue hover:bg-pano-dark-blue focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
         >
-          Generate Offer Letter
+          Generate Training Letter
         </button>
       </div>
     </div>
   );
 
   const renderForm = () => (
-    <form onSubmit={handlePreview} className="space-y-2">
+    <form onSubmit={handlePreview} className="space-y-1">
       <div>
-        <label
-          htmlFor="name"
-          className="block text-sm font-medium text-gray-700 mb-1"
-        >
-          Employee Name
+        <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+          Employee Name :
         </label>
         <input
           type="text"
@@ -101,17 +106,14 @@ const OfferForm = ({ onSubmit, onClose }) => {
           id="name"
           value={formData.name}
           onChange={handleChange}
-          placeholder="John Doe"
+          placeholder="Eg. Krish"
           className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
           required
         />
       </div>
       <div>
-        <label
-          htmlFor="designation"
-          className="block text-sm font-medium text-gray-700 mb-1"
-        >
-          Designation
+        <label htmlFor="designation" className="block text-sm font-medium text-gray-700 mb-1">
+          Designation :
         </label>
         <input
           type="text"
@@ -119,78 +121,94 @@ const OfferForm = ({ onSubmit, onClose }) => {
           id="designation"
           value={formData.designation}
           onChange={handleChange}
-          placeholder="Software Engineer"
+          placeholder="Eg. Software Engineer"
           className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+          required
         />
       </div>
       <div>
-        <label
-          htmlFor="joiningDate"
-          className="block text-sm font-medium text-gray-700 mb-1"
+        <label htmlFor="gender" className="block text-sm font-medium text-gray-700 mb-1">
+          Gender :
+        </label>
+        <select
+          name="gender"
+          id="gender"
+          value={formData.gender}
+          onChange={handleChange}
+          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+          required
         >
-          Joining Date
+          <option value="">Select Gender</option>
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+        </select>
+      </div>
+      <div>
+        <label htmlFor="date" className="block text-sm font-medium text-gray-700 mb-1">
+          Effective Start Service Date :
         </label>
         <DatePicker
-          selected={formData.joiningDate}
-          onChange={(date) => handleDateChange(date, "joiningDate")}
+          selected={formData.date}
+          onChange={handleDateChange}
           dateFormat="dd/MM/yyyy"
-          placeholderText="Click to select date"
+          placeholderText="Click here to select date"
           className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
           required
         />
       </div>
       <div>
-        <label
-          htmlFor="letterDate"
-          className="block text-sm font-medium text-gray-700 mb-1"
-        >
-          Letter Date
+        <label htmlFor="enddate" className="block text-sm font-medium text-gray-700 mb-1">
+          End Service Date :
         </label>
         <DatePicker
-          selected={formData.letterDate}
-          onChange={(date) => handleDateChange(date, "letterDate")}
+          selected={formData.enddate}
+          onChange={handleEndDateChange}
           dateFormat="dd/MM/yyyy"
-          placeholderText="Click to select date"
+          placeholderText="Click here to select date"
           className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
           required
         />
       </div>
-      <div>
-        <label
-          htmlFor="probationPeriod"
-          className="block text-sm font-medium text-gray-700 mb-1"
-        >
-          Probation Period (months)
-        </label>
+      {/* 
+      <div className="flex items-center space-x-2">
         <input
-          type="number"
-          name="probationPeriod"
-          id="probationPeriod"
-          value={formData.probationPeriod}
+          type="checkbox"
+          id="addPvtLtd"
+          name="addPvtLtd"
+          checked={formData.addPvtLtd}
           onChange={handleChange}
-          min="1"
-          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-          required
+          className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
         />
-      </div>
-      <div>
         <label
-          htmlFor="bondPeriod"
-          className="block text-sm font-medium text-gray-700 mb-1"
+          htmlFor="addPvtLtd"
+          className="text-sm font-medium text-gray-700"
         >
-          Bond Period (years)
+        Optional : Add "Pvt Ltd." in company name ? 
         </label>
+      </div> */}
+
+      <div className="flex items-center space-x-2">
         <input
-          type="number"
-          name="bondPeriod"
-          id="bondPeriod"
-          value={formData.bondPeriod}
-          onChange={handleChange}
-          min="1"
-          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-          required
+          type="checkbox"
+          id="addPvtLtd"
+          name="addPvtLtd"
+          checked={formData.addPvtLtd}
+          onChange={(e) =>
+            setFormData((prevData) => ({
+              ...prevData,
+              addPvtLtd: e.target.checked,
+            }))
+          }
+          className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
         />
+        <label
+          htmlFor="addPvtLtd"
+          className="text-sm font-medium text-gray-700"
+        >
+          Optional: Add "Pvt Ltd." in company name?
+        </label>
       </div>
+
       <div className="flex justify-end space-x-4 mt-8">
         <button
           type="button"
@@ -212,11 +230,11 @@ const OfferForm = ({ onSubmit, onClose }) => {
   return (
     <div className="w-full max-w-2xl mx-auto p-8 bg-white rounded-lg">
       <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">
-        Offer Letter Details
+        Training Letter Details
       </h2>
       {showPreview ? renderPreview() : renderForm()}
     </div>
   );
 };
 
-export default OfferForm;
+export default TrainingForm;

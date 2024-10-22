@@ -42,6 +42,9 @@ const DashboardPdf = () => {
                         <DropdownItem to="/letters/offer" label="Offer Letter" />
                         <DropdownItem to="/letters/appointment" label="Appointment Letter" />
                         <DropdownItem to="/letters/appraisal" label="Appraisal Letter" />
+                        <DropdownItem to="/letters/training" label="Training Letter" />
+                        <DropdownItem to="/letters/experience" label="Experience Letter" />
+                        {/* <DropdownItem to="/letters/joining" label="Joining Letter" /> */}
                       </div>
                     </div>
                   )}

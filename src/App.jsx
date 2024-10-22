@@ -12,6 +12,9 @@ import PayslipForm from "./Components/payslip/PayslipForm";
 import Appraisal from "./Components/letters/Apperaisal";
 import Offer from "./Components/letters/Offer";
 import Appointment from "./Components/letters/Appointment";
+import Training from "./Components/letters/Training";
+import Experience from "./Components/letters/Experience";
+
 
 export const AppContext = createContext("");
 
@@ -184,7 +187,7 @@ function App() {
         <Routes>
           <Route index element={<Landing />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/appointment" element={<Appointment />} />
+        {/*   <Route path="/appointment" element={<Appointment />} /> */}
           <Route element={<PrivateRoutes />}>
             {" "}
             <Route path="/dashboard" element={<DashBoard />} />
@@ -193,6 +196,10 @@ function App() {
             <Route path="/letters/appraisal" element={<Appraisal />} />
             <Route path="/letters/offer" element={<Offer />} />
             <Route path="/letters/appointment" element={<Appointment />} />
+            <Route path="/letters/training" element={<Training />} />
+            <Route path="/letters/experience" element={< Experience />} />
+          
+         
           </Route>
         </Routes>
       </BrowserRouter>
