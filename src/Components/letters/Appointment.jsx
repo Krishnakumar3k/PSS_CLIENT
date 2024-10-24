@@ -1,313 +1,344 @@
-import React, { useState, useEffect } from "react";
-import { jsPDF } from "jspdf";
-import { ToWords } from "to-words";
+import React, { useState } from "react";
+import {
+  Document,
+  Page,
+  Text,
+  View,
+  StyleSheet,
+  Font,
+  Image,
+  PDFViewer,
+} from "@react-pdf/renderer";
+
 import NavBarLetters from "./NavBarLetters";
 import AppointmentForm from "./AppointmentForm";
 
-// Initialize ToWords
-const toWords = new ToWords({
-  localeCode: "en-IN",
-  converterOptions: {
-    currency: true,
-    ignoreDecimal: true,
-    ignoreZeroCurrency: false,
-    doNotAddOnly: false,
-    currencyOptions: {
-      name: "Rupee",
-      plural: "Rupees",
-      symbol: "₹",
-    },
+// Register fonts
+Font.register({
+  family: "Helvetica",
+  src: "https://fonts.cdnfonts.com/s/29136/Helvetica.woff",
+});
+
+Font.register({
+  family: "Helvetica-Bold",
+  src: "https://fonts.cdnfonts.com/s/29136/Helvetica-Bold.woff",
+});
+
+Font.register({
+  family: "Times-Roman",
+  src: "https://fonts.cdnfonts.com/s/29136/Times-Roman.woff",
+});
+
+Font.register({
+  family: "Times-Bold",
+  src: "https://fonts.cdnfonts.com/s/29136/Times-Bold.woff",
+});
+
+// Styles
+const styles = StyleSheet.create({
+  page: {
+    fontFamily: "Helvetica",
+    fontSize: 10,
+    paddingTop: 20,
+    paddingBottom: 65,
+    paddingHorizontal: 30,
+  },
+  header: {
+    flexDirection: "row",
+    marginTop: 15,
+  },
+  logo: {
+    width: 180,
+    height: 40,
+    position: "absolute",
+  },
+  companyInfo: {
+    flexGrow: 1,
+    textAlign: "right",
+    fontSize: 8,
+    fontFamily: "Times-Roman",
+  },
+  companyName: {
+    fontSize: 12,
+    fontFamily: "Times-Bold",
+  },
+  title: {
+    fontSize: 11,
+    fontWeight: "bold",
+    textAlign: "center",
+    // marginVertical: 10,
+    top: 45,
+    textDecoration: "underline",
+    color: "#0c7089",
+    marginBottom: 25,
+  },
+  content: {
+    marginTop: 50,
+    marginBottom: 10,
+    marginHorizontal: 30,
+    color: "#0c7089",
+  },
+  paragraph: {
+    marginTop:5,
+    marginBottom: 12,
+    textAlign: "justify",
+    letterSpacing: 0.2,
+    fontFamily: "Times-Roman",
+    fontSize: 10,
+  },
+  subPoint: {
+    marginLeft: 15, // This creates the indent for sub-points
+    marginBottom: 5,
+    textAlign: "justify",
+    letterSpacing: 0.2,
+    fontFamily: "Times-Roman",
+  },
+  bold: {
+    fontFamily: "Times-Bold",
+  },
+  footer: {
+    position: "absolute",
+    fontSize: 9,
+    bottom: 20,
+    left: 35,
+    right: 35,
+    textAlign: "center",
+    color: "grey",
+  },
+   //horizental line code
+  line1: {
+    height: 0.8,
+    backgroundColor: "black",
+    width: "100%",
+    top: 8.5,
+  },
+  line2: {
+    height: 0.8,
+    backgroundColor: "black",
+    width: "88.5%",
+    position: "absolute",
+    bottom: 50,
+  },
+  greetingContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginHorizontal: 30,
+    marginBottom: 30,
+    top: 40,
+  },
+  greetingText1: {
+    top: 6,
+    color: "#0c7089",
+  },
+  greetingText2: {
+    top: 6,
+    color: "#0c7089",
   },
 });
 
-export default function Appointment() {
-  const [pdfUrl, setPdfUrl] = useState("");
+// PDF Document component
+const Appointment = ({ data }) => {
+      // Utility function to format salary---------------------kk
+      const formatSalary = (salary) => {
+        const numericSalary = Number(salary.replace(/[^\d]/g, '')); // Ensure it's numeric
+        return numericSalary.toLocaleString("en-IN"); // Format as Indian style
+      };
+  return(
+    <Document>
+    <Page size="A4" style={styles.page}>
+      {/* Header */}
+      <View style={styles.header}>
+        <Image style={styles.logo} src="../images/panorama.png" />
+        <View style={styles.companyInfo}>
+          <Text style={styles.companyName}>
+            {/* {data.includePvtLtd ? "PANORAMA SOFTWARE SOLUTIONS PVT LTD" : "PANORAMA SOFTWARE SOLUTIONS"} */}
+            PANORAMA SOFTWARE SOLUTIONS PVT LTD
+          </Text>
+          <Text>
+            Unit no - 621-622, 6th Floor, Tower 1, Assotech Business Cresterra,
+          </Text>
+          <Text>Sector 135, Noida - 201304, Uttar Pradesh</Text>
+          <Text>Mobile: +919888887651</Text>
+          <Text>Email: Hr@panoramasoftware.in</Text>
+          <Text>Website: www.panoramasoftwares.com</Text>
+        </View>
+      </View>
+
+      {/* divider line */}
+      <View style={styles.line1} />
+
+      {/* Content */}
+      <View style={styles.greetingContainer}>
+        <Text style={styles.greetingText2}>
+          Dear <Text style={styles.bold}>{data.name}</Text>,
+        </Text>
+        <Text style={styles.greetingText1}>
+          Date: <Text style={styles.bold}>{data.issuedate}</Text>
+        </Text>
+      </View>
+      <Text style={styles.title}>
+        <Text style={styles.bold}>Letter Of Appointment</Text>
+      </Text>
+
+      <View style={styles.content}>
+        <Text style={styles.paragraph}>
+          The management is pleased to engage your services on the following undertaking:{" "}
+        </Text>
+        <Text style={styles.paragraph}>
+          <Text style={styles.bold}>1.</Text> Starting from
+          <Text style={styles.bold}> {data.date}</Text> you will provide your services as <Text style={styles.bold}>{data.designation}</Text> supporting
+          Panorama's Team in Noida.
+        </Text>
+        <Text style={styles.paragraph}>
+          <Text>You assure and undertake to be respectful of the following obligations in rendering your services:</Text>{" "}
+        </Text>
+        <Text style={styles.subPoint}>
+          <Text>• To abide by the company's rules and maintain a behavior that safeguards the Company's image.</Text>
+        </Text>
+        <Text style={styles.subPoint}>
+          <Text>• To abide by the procedures of the Company concerning the services entrusted to you. </Text>
+        </Text>
+        <Text style={styles.subPoint}>
+          <Text>• To maintain a high standard of efficiency and diligence in your work, exerting full efforts to develop and protect the interests of the Company.
+          </Text>
+        </Text>
+        <Text style={styles.paragraph}>
+          <Text style={styles.bold}>2.</Text> Your C.T.C. has been fixed as <Text style={styles.bold}> {formatSalary(data.salary)} INR </Text>per annum
+        </Text>
+
+        <Text style={styles.paragraph}>
+          <Text style={styles.bold}>3.</Text> You will be on probation for the first Six Months. Upon confirmation, your services are terminable with
+          six months’ notice or payment thereof without assigning any reason. The assignment in this Company may
+          also terminate before the date of expiry of the attendance formerly requested, by mutual agreement or
+          non-fulfillment of this cooperation relationship or your misconduct. However, during the probation period, the
+          services may be terminated by giving 30 days’ notice or 15 days salary in lieu thereof.</Text>
+        <Text style={styles.paragraph}>
+          <Text style={styles.bold}>4.</Text> The above monthly pay covers 1 (one) calendar day of leave per month. This leave shall be scheduled in
+          accordance with the Company's convenience, and the leave can be accumulated over the months till
+          December of the same year but cannot be encashed. For details, please refer to the Company leave policy.
+        </Text>
+        <Text style={styles.paragraph}>
+          <Text style={styles.bold}>5.</Text> You will need to submit to this office, copies of your resume and testimonials, for the Company's record.
+          You will report to this Office any changes regarding your qualifications or certifications
+        </Text>
+        <Text style={styles.paragraph}>
+          <Text style={styles.bold}>6.</Text> Keeping in view the special nature of the Company's business, you shall be required to enter into a
+          necessary Confidential Agreement with the Company. During the course of your employment with this
+          Company, you shall maintain strict confidentiality as to our affairs and shall make no disclosure to any
+          person not legally entitled hereto; nor shall you permit or allow any person to inspect or have access to any
+          books, documents, and belongings to or in the possession of our offices. Your confidentiality obligation shall
+          continue even after the expiry of your employment with the Company for any reason.
+        </Text>
+        <Text style={styles.paragraph}>
+          <Text style={styles.bold}>7.</Text> You shall make good any loss or damage to the Company's property caused by your negligence or any
+          deliberate act. Your termination for such a cause shall not relieve you from the liability to make good such
+          loss or damage, or be considered as a waiver of the company's legal remedies. Further, the company shall
+          not be responsible for any termination damages on this ground.
+        </Text>
+      </View>
+
+
+
+      {/* Bottom divider line */}
+      <View style={styles.line2} />
+
+      {/* Footer */}
+      <Text style={styles.footer}>
+        Unit no - 621-622, 6th Floor, Tower 1, Assotech Business Cresterra,
+        Sector 135, Noida - 201304, Uttar Pradesh
+        {"\n"}
+        Classification: Confidential
+      </Text>
+    </Page>
+
+    <Page size="A4" style={styles.page}>
+      <View style={styles.content}>
+        
+        <Text style={styles.paragraph}>
+          <Text style={styles.bold}>8.</Text> The Company expects you to work with a high standard of efficiency and economy. You will carry out
+          the instructions of your superiors diligently and will not act in a manner, which leads to any adverse report
+          from the management.
+        </Text>
+        <Text style={styles.paragraph}>
+          <Text style={styles.bold}>9.</Text> You will be a full-time Employee of our Company and devote your full time and attention to the
+          business of the Company. During the period of your employment, you shall not engage yourself in any
+          manner, in any other service or business or profession or trade or as an agent or servant of any other
+          person or firm whether remunerative or honorary unless agreed between you and Company in writing.
+        </Text>
+        <Text style={styles.paragraph}>
+          <Text style={styles.bold}>10.</Text> During your working hours, and at any other time, you shall not involve in any activity whatsoever
+          which is not connected with work or business of our Company. In case you are found engaged as
+          mentioned above; your services will be terminated without giving any notice or salary in lieu thereof.
+        </Text>
+
+        <Text style={styles.paragraph}>
+          <Text style={styles.bold}>11.</Text>This letter of appointment has been issued to you on the undertaking that there is nothing in your past
+          records which are objectionable. If it comes to the notice of this company at any time that any declaration
+          given by you to this Company is false or you have willfully suppressed any information, your services may
+          be terminated without any notice or compensation in lieu thereof.
+        </Text>
+        <Text style={styles.paragraph}>
+          <Text style={styles.bold}>12.</Text>This Letter of Appointment and the Service Agreement signed along with this constituted the entire
+          agreement between the parties and can only be amended in writing, signed by both the parties.
+        </Text>
+        <Text style={styles.paragraph}>
+          <Text style={styles.bold}>13.</Text>This letter of appointment cancels and supersedes any previous understanding, written, oral or implied
+          that you may have of ours.
+        </Text>
+        <Text style={styles.paragraph}>
+          <Text style={styles.bold}>14.</Text> Kindly sign, date and return the annexed copy of this letter of appointment for your acceptance
+        </Text>
+        <View
+          style={{
+            marginTop: 160,
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "flex-start",
+            paddingRight: 20,
+          }}
+        >
+          <View>
+            <Text style={{ ...styles.paragraph, marginBottom: 1 }}>
+              <Text style={styles.bold}>HR Executive</Text>
+            </Text>
+            <Text style={{ ...styles.paragraph, marginBottom: 1 }}>
+              <Text style={styles.bold}>Panorama Software Solutions Pvt Ltd</Text>
+            </Text>
+            <Text style={{ ...styles.paragraph, marginBottom: 1 }}>
+              <Text style={styles.bold}>Noida, UP, India</Text>
+            </Text>
+          </View>
+          <Text
+            style={{
+              ...styles.paragraph,
+              marginBottom: 1,
+              alignSelf: "flex-start",
+              marginLeft: 10,
+            }}
+          >
+            <Text style={styles.bold}>Employee</Text>
+          </Text>
+        </View>
+      </View>
+
+      {/* Bottom divider line */}
+      <View style={styles.line2} />
+
+      {/* Footer */}
+      <Text style={styles.footer}>
+        Unit no - 621-622, 6th Floor, Tower 1, Assotech Business Cresterra,
+        Sector 135, Noida - 201304, Uttar Pradesh
+        {"\n"}
+        Classification: Confidential
+      </Text>
+    </Page>
+  </Document>
+  );
+};
+
+export default function Offer() {
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState(null);
-
-  const generatePDF = (data) => {
-    const doc = new jsPDF({
-      orientation: "portrait",
-      unit: "mm",
-      format: "a4",
-    });
-
-    // Helper function to add justified text------------------kkk
-    const addJustifiedText = (text, startY, fontSize = 10, lineHeight = 5) => {
-      
-      doc.setFontSize(fontSize);
-      const pageWidth = doc.internal.pageSize.width;
-      const margin = 20; // Default margin
-      const bulletOffset = 10; // Offset to shift bullet points
-      const maxWidth = pageWidth - 2 * margin;
-
-      const lines = text.split("\n");
-      let y = startY;
-
-      lines.forEach((line, lineIndex) => {
-        const isBullet = line.trim().startsWith("•"); // Check if it's a bullet point
-        const currentMargin = isBullet ? margin + bulletOffset : margin; // Adjust margin for bullet points
-        const currentMaxWidth = maxWidth - (isBullet ? bulletOffset : 0); // Adjust max width for bullet points
-
-        const segments = line.split(/(\*\*.*?\*\*)/);
-        let lineContent = [];
-        let currentLineWidth = 0;
-
-        segments.forEach((segment) => {
-          const isBold = segment.startsWith("**") && segment.endsWith("**");
-          const text = isBold ? segment.slice(2, -2) : segment;
-          const words = text.split(" ");
-
-          words.forEach((word, wordIndex) => {
-            const wordWidth =
-              (doc.getStringUnitWidth(word) * fontSize) /
-              doc.internal.scaleFactor;
-            const spaceWidth =
-              (doc.getStringUnitWidth("  ") * fontSize) /
-              doc.internal.scaleFactor;
-
-            if (
-              currentLineWidth + wordWidth + spaceWidth > currentMaxWidth &&
-              lineContent.length > 0
-            ) {
-              // Print the current line
-              printJustifiedLine(
-                doc,
-                lineContent,
-                currentMargin,
-                y,
-                currentMaxWidth,
-                fontSize,
-                false
-              );
-              y += lineHeight;
-              lineContent = [];
-              currentLineWidth = 0;
-            }
-
-            lineContent.push({ text: word, isBold, width: wordWidth });
-            currentLineWidth += wordWidth + spaceWidth;
-          });
-        });
-
-        // Print the last line of the paragraph
-        if (lineContent.length > 0) {
-          printJustifiedLine(
-            doc,
-            lineContent,
-            currentMargin,
-            y,
-            currentMaxWidth,
-            fontSize,
-            true
-          );
-          y += lineHeight;
-        }
-
-        // Add extra space between paragraphs
-        if (lineIndex < lines.length - 1) {
-          y += lineHeight / 2;
-        }
-      });
-
-      return y;
-    };
-    const printJustifiedLine = (
-      doc,
-      lineContent,
-      margin,
-      y,
-      maxWidth,
-      fontSize,
-      isLastLine
-    ) => {
-      const lineWidth = lineContent.reduce((sum, item) => sum + item.width, 0);
-      const spaces = lineContent.length - 1;
-    
-      let spaceWidth;
-      if (isLastLine || spaces === 0) {
-        spaceWidth = (doc.getStringUnitWidth(" ") * fontSize) / doc.internal.scaleFactor;
-      } else {
-        spaceWidth = (maxWidth - lineWidth) / spaces;
-      }
-    
-      let xOffset = margin;
-      lineContent.forEach((item, index) => {
-        // Set bold or normal font based on `isBold`
-        if (item.text.match(/^\d+\.$/)) {  // Check if the item is a number followed by a period, like "1.", "2."
-          doc.setTextColor(0, 0, 0);  // Set the color to black
-          doc.setFont("times", "bold");
-        } else {
-          doc.setTextColor(12, 112, 137); // Set the default color for other text
-          doc.setFont("times", item.isBold ? "bold" : "normal");
-        }
-    
-        doc.text(item.text, xOffset, y);
-        xOffset += item.width + (index < spaces ? spaceWidth : 0);
-      });
-    };
-    
-    // Utility function to format salary---------------------kk
-    const formatSalary = (salary) => {
-      const numericSalary = Number(salary.replace(/[^\d]/g, '')); // Ensure it's numeric
-      return numericSalary.toLocaleString("en-IN"); // Format as Indian style
-    };
-
-    // Utility function to convert salary to words---------------------kk
-    const convertSalaryToWords = (salary) => {
-      return toWords.convert(salary, { currency: true });
-    };
-    const addHeader = () => {
-      // company logo
-      const logoPath = "../images/panorama.png";
-      doc.addImage(logoPath, "PNG", 10, 10, 69, 14, { align: "left" });
-
-      // company name and address
-      doc.setFontSize(12);
-      doc.setTextColor(0);
-      doc.setFont("times", "bold");
-      doc.text("PANORAMA SOFTWARE SOLUTIONS PVT LTD", 200, 15, {
-        align: "right",
-      });
-      doc.setFontSize(8);
-      doc.setTextColor(120, 120, 120);
-      doc.text(
-        "Unit no - 621-622, 6th Floor, Tower 1, Assotech Business Cresterra,",
-        200,
-        20,
-        { align: "right" }
-      );
-      doc.text("Sector 135, Noida - 201304, Uttar Pradesh", 200, 24, {
-        align: "right",
-      });
-      doc.text("Mobile: +919888887651", 200, 28, { align: "right" });
-      doc.text("Email: Hr@panoramasoftware.in", 200, 32, { align: "right" });
-      doc.text("Website: www.panoramasoftwares.com", 200, 36, {
-        align: "right",
-      });
-      doc.setFont("helvetica", "normal");
-
-      // Reset text color
-      doc.setTextColor(12, 112, 137);
-      // divider
-      doc.line(10, 40, 200, 40);
-    };
-
-    const addFooter = () => {
-      doc.setFontSize(9.5);
-      doc.setTextColor(120, 120, 120);
-      doc.line(9, 279, 201, 279);
-      doc.setFont("helvetica", "normal");
-      doc.text(
-        "Unit no - 621-622, 6th Floor, Tower 1, Assotech Business Cresterra, Sector 135, Noida - 201304, Uttar Pradesh",
-        105,
-        285,
-        { align: "center" }
-      );
-      doc.text("Classification: Confidential", 105, 290, { align: "center" });
-      doc.setTextColor(12, 112, 137);
-    };
-
-    // Header and first part of the letter
-    addHeader();
-
-    doc.setFontSize(10);
-    doc.setTextColor(12, 112, 137);
-    doc.setFont("times  ", "normal");
-    doc.text(`Date:`, 162, 53, { align: "right" });
-    doc.setFont("times", "bold");
-    doc.text(` ${data.issuedate}`, 193, 53, { align: "right" });
-    doc.text(`Dear ${data.name},`, 20, 53);
-    doc.setFontSize(10);
-    doc.text("Letter of Appointment", 85, 70);
-    const textWidth = doc.getTextWidth("Letter of Appointment");
-    const startX = 85;
-    const startY = 71.3;
-    doc.setDrawColor(12, 112, 137);
-    doc.line(startX, startY, startX + textWidth, startY);
-    doc.setDrawColor(0);
-
-    // Content for page one with bold markers
-    const contentPageOne = [
-      "The management is pleased to engage your services on the following undertaking:",
-      `1. Starting from**${data.date}**you will provide your services as**${data.designation}**supporting Panorama's Team in Noida.`,
-      "You assure and undertake to be respectful of the following obligations in rendering your services:",
-      "• To abide by the company's rules and maintain a behavior that safeguards the Company's image.",
-      "• To abide by the procedures of the Company concerning the services entrusted to you.",
-      "• To maintain a high standard of efficiency and diligence in your work, exerting full efforts to develop and protect the interests of the Company.",
-      `2. Your C.T.C. has been fixed as**${formatSalary(data.salary)}**INR per annum.`,
-      "3. You will be on probation for the first Six Months. Upon confirmation, your services are terminable with six months’ notice or payment thereof without assigning any reason. The assignment in this Company may also terminate before the date of expiry of the attendance formerly requested, by mutual agreement or non-fulfillment of this cooperation relationship or your misconduct. However, during the probation period, the services may be terminated by giving 30 days’ notice or 15 days salary in lieu thereof.",
-      "4. The above monthly pay covers 1 (one) calendar day of leave per month. This leave shall be scheduled in accordance with the Company's convenience, and the leave can be accumulated over the months till December of the same year but cannot be encashed. For details, please refer to the Company leave policy.",
-      "5. You will need to submit to this office, copies of your resume and testimonials, for the Company's record. You will report to this Office any changes regarding your qualifications or certifications.",
-      "6. Keeping in view the special nature of the Company's business, you shall be required to enter into a necessary Confidential Agreement with the Company. During the course of your employment with this Company, you shall maintain strict confidentiality as to our affairs and shall make no disclosure to any person not legally entitled hereto; nor shall you permit or allow any person to inspect or have access to any books, documents, and belongings to or in the possession of our offices. Your confidentiality obligation shall continue even after the expiry of your employment with the Company for any reason.",
-    ];
-
-
-    const contentPageTwo = [
-      "7. You shall make good any loss or damage to the Company's property caused by your negligence or any deliberate act. Your termination for such a cause shall not relieve you from the liability to make good such loss or damage, or be considered as a waiver of the company's legal remedies. Further, the company shall not be responsible for any termination damages on this ground.",
-      "8. The Company expects you to work with a high standard of efficiency and economy. You will carry out the instructions of your superiors diligently and will not act in a manner, which leads to any adverse report from the management.",
-      "9. You will be a full-time Employee of our Company and devote your full time and attention to the business of the Company. During the period of your employment, you shall not engage yourself in any manner, in any other service or business or profession or trade or as an agent or servant of any other person or firm whether remunerative or honorary unless agreed between you and Company in writing.",
-      "10. During your working hours, and at any other time, you shall not involve in any activity whatsoever which is not connected with work or business of our Company. In case you are found engaged as mentioned above; your services will be terminated without giving any notice or salary in lieu thereof.",
-      "11. This letter of appointment has been issued to you on the undertaking that there is nothing in your past records which are objectionable. If it comes to the notice of this company at any time that any declaration given by you to this Company is false or you have willfully suppressed any information, your services may be terminated without any notice or compensation in lieu thereof.",
-      "12. This Letter of Appointment and the Service Agreement signed along with this constituted the entire agreement between the parties and can only be amended in writing, signed by both the parties.",
-      "13. This letter of appointment cancels and supersedes any previous understanding, written, oral or implied that you may have of ours.",
-      "14.  Kindly sign, date and return the annexed copy of this letter of appointment for your acceptance",
-    ];
-    // Add header to first page
-    addFooter();
-    addHeader();
-
-    let y = 85;
-    contentPageOne.forEach((paragraph) => {
-      y = addJustifiedText(paragraph, y, 10, 5) + 4;
-      if (y > 270) {
-        // doc.addPage();
-        // addHeader();
-        y = 50;
-      }
-    });
-
-
-
-
-    // Add page two without header
-    doc.addPage();
-    y = 30;
-    contentPageTwo.forEach((paragraph) => {
-      y = addJustifiedText(paragraph, y, 10, 5) + 4;
-      if (y > 270) {
-        doc.addPage();
-        y = 50;
-      }
-    });
-
-    // Add footer to page one
-    addFooter();
-    // Add signature lines
-    y += 30;
-    doc.setFont("helvetica", "bold");
-    y += 20;
-    doc.text("HR Executive", 20, y);
-    doc.text("Employee", 150, y);
-    y += 5;
-    doc.text("Panorama Software Solutions Pvt Ltd", 20, y);
-    y += 5;
-    doc.text("Noida, UP, India", 20, y);
-
-
-
-    // Generate PDF preview
-    const pdfBlob = doc.output("blob");
-    const url = URL.createObjectURL(pdfBlob);
-    setPdfUrl(url);
-  };
-
-  useEffect(() => {
-    if (formData) {
-      generatePDF(formData);
-    }
-    return () => URL.revokeObjectURL(pdfUrl);
-  }, [formData]);
 
   const handleFormSubmit = (data) => {
     setFormData(data);
@@ -328,27 +359,24 @@ export default function Appointment() {
         </div>
 
         {showForm && (
-          <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white w-full max-w-lg mx-auto p-6 rounded-lg">
-              <AppointmentForm onSubmit={handleFormSubmit} />
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+            <div className="bg-white p-4 rounded-lg">
+              <AppointmentForm
+                onSubmit={handleFormSubmit}
+                onClose={() => setShowForm(false)}
+              />
             </div>
           </div>
         )}
 
-        {pdfUrl && (
-          <iframe
-            className="w-full h-screen mt-8 shadow-lg"
-            src={pdfUrl}
-            frameBorder="0"
-          />
+        {formData && (
+          <div className="bg-gray-50 shadow-lg flex md:px-7 lg:px-20 flex-col mt-3 rounded-2xl w-full h-screen sm:px-5">
+            <PDFViewer width="100%" height="800px">
+              <Appointment data={formData} />
+            </PDFViewer>
+          </div>
         )}
       </div>
     </div>
   );
 }
-
-
-
-
-
-
