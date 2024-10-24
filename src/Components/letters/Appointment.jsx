@@ -135,16 +135,19 @@ const styles = StyleSheet.create({
     color: "#0c7089",
   },
 });
+ // Salary function code----kk
+const formatINR = (amount) => {
+  return new Intl.NumberFormat('en-IN', {
+    style: 'currency',
+    currency: 'INR',
+    maximumFractionDigits: 0, // No decimals
+  }).format(amount).replace("₹", "").trim(); // Remove INR symbol if needed
+};
 
 // PDF Document component
-const Appointment = ({ data }) => {
-      // Utility function to format salary---------------------kk
-      const formatSalary = (salary) => {
-        const numericSalary = Number(salary.replace(/[^\d]/g, '')); // Ensure it's numeric
-        return numericSalary.toLocaleString("en-IN"); // Format as Indian style
-      };
-  return(
-    <Document>
+const Appointment = ({ data }) => (
+  
+  <Document>
     <Page size="A4" style={styles.page}>
       {/* Header */}
       <View style={styles.header}>
@@ -203,7 +206,7 @@ const Appointment = ({ data }) => {
           </Text>
         </Text>
         <Text style={styles.paragraph}>
-          <Text style={styles.bold}>2.</Text> Your C.T.C. has been fixed as <Text style={styles.bold}> {formatSalary(data.salary)} INR </Text>per annum
+          <Text style={styles.bold}>2.</Text> Your C.T.C. has been fixed as <Text style={styles.bold}>{formatINR(data.salary)} INR </Text>per annum
         </Text>
 
         <Text style={styles.paragraph}>
@@ -333,8 +336,7 @@ const Appointment = ({ data }) => {
       </Text>
     </Page>
   </Document>
-  );
-};
+);
 
 export default function Offer() {
   const [showForm, setShowForm] = useState(false);
