@@ -37,7 +37,7 @@ Font.register({
 // Styles
 const styles = StyleSheet.create({
   page: {
-    fontFamily: "Helvetica",
+    fontFamily: "Times-Roman",
     fontSize: 10,
     paddingTop: 20,
     paddingBottom: 65,
@@ -128,6 +128,7 @@ const styles = StyleSheet.create({
   },
   greetingText1: {
     top: 6,
+     fontFamily: "Times-Roman",
     color: "#0c7089",
   },
   greetingText2: {
@@ -173,7 +174,7 @@ const Appointment = ({ data }) => (
       {/* Content */}
       <View style={styles.greetingContainer}>
         <Text style={styles.greetingText2}>
-          Dear <Text style={styles.bold}>{data.name}</Text>,
+          <Text style={styles.bold}> Dear {data.name}</Text>,
         </Text>
         <Text style={styles.greetingText1}>
           Date: <Text style={styles.bold}>{data.issuedate}</Text>
@@ -338,7 +339,7 @@ const Appointment = ({ data }) => (
   </Document>
 );
 
-export default function Offer() {
+export default function NewAppointment() {
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState(null);
 

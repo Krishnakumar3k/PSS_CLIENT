@@ -1,5 +1,4 @@
 
-//React Lib----------------------------------------------------------------------
 
 import React, { useState } from "react";
 import {
@@ -39,7 +38,7 @@ Font.register({
 // Styles
 const styles = StyleSheet.create({
   page: {
-    fontFamily: "Helvetica",
+    fontFamily: "Times-Roman",
     fontSize: 10,
     paddingTop: 20,
     paddingBottom: 65,
@@ -173,7 +172,7 @@ const Experiences = ({ data }) => {
           This letter certifies that{" "}
           <Text style={styles.bold}>{data.name}</Text> was an employee in the role of{" "}
           <Text style={styles.bold}>{data.designation}</Text> with{" "}
-          <Text style={styles.bold}>{data.addPvtLtd ? "PANORAMA SOFTWARE SOLUTIONS PVT LTD" : "PANORAMA SOFTWARE SOLUTIONS"} </Text> during the period from <Text style={styles.bold}>{data.date}</Text> to <Text style={styles.bold}>{data.enddate}</Text>. {" "}
+          <Text style={styles.bold}>{data.addPvtLtd ? "PANORAMA SOFTWARE SOLUTIONS PVT LTD" : "PANORAMA SOFTWARE SOLUTIONS"} </Text>during the period from <Text style={styles.bold}>{data.date}</Text> to <Text style={styles.bold}>{data.enddate}</Text>. {" "}
         </Text>
         <Text style={styles.paragraph}>
           <Text>Throughout {pronoun} tenure with us, <Text style={styles.bold}>{data.name}</Text> consistently demonstrated unwavering dedication and loyalty</Text> {" "}
