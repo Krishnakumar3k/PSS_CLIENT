@@ -168,25 +168,25 @@ const TrainingPdf = ({ data }) => {
           <Text style={styles.paragraph}>
 
             This letter certifies that <Text style={styles.bold}>{data.name}</Text> has been working with <Text style={styles.bold}>Panorama Software
-              Solutions Pvt Ltd</Text>  in the capacity of <Text style={styles.bold}>{data.designation}</Text>{" "}
+              Solutions Pvt Ltd</Text> as a <Text style={styles.bold}>{data.designation}</Text>{" "}
             from <Text style={styles.bold}>{data.date}</Text> to <Text style={styles.bold}>{data.enddate}</Text> .
-            He has done an excellent job during his to engagement with the IT department of the company.
+            He has done an excellent job during his to engagement with the company.
           </Text>
           <Text style={styles.paragraph}>
             During {pronoun} tenure, <Text style={styles.bold}>{data.name}</Text> consistently delivered a high level of performance, exceeding
             expectations. {pronounSubject} exhibited a proactive and accountable approach to {pronoun} tasks, demonstrating a keen attention
-            to detail and a strong commitment to excellence.{pronoun} work ethic, reliability, and integrity were exemplary,
+            to detail and a strong commitment to excellence {pronoun} work ethic, reliability, and integrity were exemplary,
             earning him the confidence and respect of the management.
           </Text>
           <Text style={styles.paragraph}>
-            I would like to take this opportunity to express my appreciation to <Text style={styles.bold}>{data.name}</Text> for his
+            We would like to take this opportunity to express my appreciation to <Text style={styles.bold}>{data.name}</Text> for his
             services and wish him all the very best for his future endeavors
           </Text>
 
-          <Text style={{ ...styles.paragraph, marginBottom: 0, marginTop: 60 }}>{" "}Sincerely, </Text>
+          <Text style={{ ...styles.paragraph, marginBottom: 0, marginTop: 50 }}>{" "}Sincerely, </Text>
           <View
             style={{
-              marginTop: 145,
+              marginTop: 115,
               flexDirection: "row",
               justifyContent: "space-between",
               alignItems: "flex-start",
